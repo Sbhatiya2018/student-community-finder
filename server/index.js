@@ -33,7 +33,7 @@ app.post('/api/communities', async (req, res) => {
         return;
     }
 
-    const sql = "INSERT INTO communities (name, platform, link, country, field, courseType, source_country, university, intake) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *";
+    const sql = "INSERT INTO communities (name, platform, link, country, field, courseType, source_country, university, intake, stage) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *";
     const params = [
         name,
         platform,
@@ -43,7 +43,8 @@ app.post('/api/communities', async (req, res) => {
         tags?.courseType || '',
         tags?.sourceCountry || '',
         tags?.university || '',
-        tags?.intake || ''
+        tags?.intake || '',
+        tags?.stage || ''
     ];
 
     try {
@@ -63,8 +64,8 @@ app.put('/api/communities/:id', async (req, res) => {
     const { name, platform, link, tags } = req.body;
 
     const sql = `UPDATE communities 
-                 SET name = $1, platform = $2, link = $3, country = $4, field = $5, courseType = $6, source_country = $7, university = $8, intake = $9 
-                 WHERE id = $10 RETURNING *`;
+                 SET name = $1, platform = $2, link = $3, country = $4, field = $5, courseType = $6, source_country = $7, university = $8, intake = $9, stage = $10 
+                 WHERE id = $11 RETURNING *`;
 
     const params = [
         name,
@@ -76,6 +77,7 @@ app.put('/api/communities/:id', async (req, res) => {
         tags?.sourceCountry || '',
         tags?.university || '',
         tags?.intake || '',
+        tags?.stage || '',
         id
     ];
 
@@ -93,6 +95,19 @@ app.put('/api/communities/:id', async (req, res) => {
     }
 });
 
+// Create suggestion
+app.post('/api/suggestions', async (req, res) => {
+    const { message } = req.body;
+    if (!message) return res.status(400).json({ error: "Message required" });
+
+    try {
+        await db.query("INSERT INTO suggestions (user_input) VALUES ($1)", [message]);
+        res.json({ message: "Suggestion received" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Helper to map DB row to frontend object structure
 function mapRowToCommunity(row) {
     return {
@@ -106,7 +121,8 @@ function mapRowToCommunity(row) {
             courseType: row.coursetype, // Postgres lowercases columns
             sourceCountry: row.source_country,
             university: row.university,
-            intake: row.intake
+            intake: row.intake,
+            stage: row.stage
         }
     };
 }

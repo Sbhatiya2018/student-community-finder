@@ -7,7 +7,8 @@ const StudentForm = ({ onSearch }) => {
         courseType: '',
         university: '',
         intake: '',
-        specialization: ''
+        specialization: '',
+        stage: ''
     });
 
     const handleChange = (e) => {
@@ -100,6 +101,23 @@ const StudentForm = ({ onSearch }) => {
                             value={formData.intake}
                             onChange={handleChange}
                         />
+                    </div>
+
+                    <div style={{ marginBottom: '1rem' }}>
+                        <label htmlFor="stage">Current Stage (Optional)</label>
+                        <select
+                            id="stage"
+                            name="stage"
+                            value={formData.stage}
+                            onChange={handleChange}
+                            style={{ width: '100%', padding: '0.8rem', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: '#fff', color: '#333' }}
+                        >
+                            <option value="">Any Stage</option>
+                            <option value="Applying">Applying / Researching</option>
+                            <option value="Offer">Offer Received</option>
+                            <option value="Visa">Visa Process</option>
+                            <option value="Arrived">Just Arrived / Settling In</option>
+                        </select>
                     </div>
                 </div>
 

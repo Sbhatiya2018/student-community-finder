@@ -17,7 +17,9 @@ const AdminDashboard = () => {
         courseType: '',
         sourceCountry: '',
         university: '',
-        intake: ''
+        university: '',
+        intake: '',
+        stage: ''
     };
 
     const [formData, setFormData] = useState(initialFormState);
@@ -61,7 +63,8 @@ const AdminDashboard = () => {
             courseType: comm.tags.courseType,
             sourceCountry: comm.tags.sourceCountry || '',
             university: comm.tags.university || '',
-            intake: comm.tags.intake || ''
+            intake: comm.tags.intake || '',
+            stage: comm.tags.stage || ''
         });
         setEditId(comm.id);
         setIsEditing(true);
@@ -87,7 +90,8 @@ const AdminDashboard = () => {
                 courseType: formData.courseType,
                 sourceCountry: formData.sourceCountry,
                 university: formData.university,
-                intake: formData.intake
+                intake: formData.intake,
+                stage: formData.stage
             }
         };
 
@@ -144,12 +148,33 @@ const AdminDashboard = () => {
                                     <option>Slack</option>
                                 </select>
                                 <input placeholder="Link" required value={formData.link} onChange={e => setFormData({ ...formData, link: e.target.value })} />
-                                <input placeholder="Destination Country" required value={formData.country} onChange={e => setFormData({ ...formData, country: e.target.value })} />
+                                <select value={formData.country} onChange={e => setFormData({ ...formData, country: e.target.value })} required>
+                                    <option value="">Select Dest. Country</option>
+                                    <option value="USA">USA</option>
+                                    <option value="UK">UK</option>
+                                    <option value="Canada">Canada</option>
+                                    <option value="Australia">Australia</option>
+                                    <option value="Germany">Germany</option>
+                                    <option value="Global">Global / Remote</option>
+                                </select>
                                 <input placeholder="Source Country (e.g. India)" value={formData.sourceCountry} onChange={e => setFormData({ ...formData, sourceCountry: e.target.value })} />
                                 <input placeholder="University" value={formData.university} onChange={e => setFormData({ ...formData, university: e.target.value })} />
                                 <input placeholder="Field (e.g. Technology)" value={formData.field} onChange={e => setFormData({ ...formData, field: e.target.value })} />
-                                <input placeholder="Course Type (e.g. Masters)" value={formData.courseType} onChange={e => setFormData({ ...formData, courseType: e.target.value })} />
+                                <select value={formData.courseType} onChange={e => setFormData({ ...formData, courseType: e.target.value })}>
+                                    <option value="">Select Course Level</option>
+                                    <option value="Masters">Masters / MBA</option>
+                                    <option value="Bachelors">Bachelors</option>
+                                    <option value="PhD">PhD</option>
+                                    <option value="Diploma">Diploma</option>
+                                </select>
                                 <input placeholder="Intake (e.g. Fall 2024)" value={formData.intake} onChange={e => setFormData({ ...formData, intake: e.target.value })} />
+                                <select value={formData.stage} onChange={e => setFormData({ ...formData, stage: e.target.value })}>
+                                    <option value="">Select Stage</option>
+                                    <option value="Applying">Applying</option>
+                                    <option value="Offer">Offer Received</option>
+                                    <option value="Visa">Visa</option>
+                                    <option value="Arrived">Arrived</option>
+                                </select>
                             </div>
                             <button type="submit" style={{ width: '100%' }}>{isEditing ? 'Update Community' : 'Create Community'}</button>
                         </form>

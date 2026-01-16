@@ -42,6 +42,15 @@ function StudentHome() {
                 if (comm.tags.courseType !== criteria.courseType) matches = false;
             }
 
+            // Filter by stage if specified
+            if (matches && criteria.stage && comm.tags.stage) {
+                // If community has a stage, it must match. 
+                // However, many legacy communities might lack stage, so we only filter stricter if both have it.
+                // Decision: If user selects 'Visa', show 'Visa' AND 'General/Empty' ones? 
+                // Ideally exact match for specialized groups.
+                if (comm.tags.stage !== criteria.stage) matches = false;
+            }
+
             // Filter by specialization (partial match, case insensitive)
             if (matches && criteria.specialization && comm.tags.field) {
                 const searchSpec = criteria.specialization.toLowerCase();
@@ -61,6 +70,23 @@ function StudentHome() {
         setFilteredCommunities(finalResults);
     };
 
+    const handleSuggestion = (e) => {
+        e.preventDefault();
+        const msg = e.target.elements.suggestion.value;
+        if (!msg) return;
+
+        fetch('/api/suggestions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg })
+        })
+            .then(() => {
+                alert("Thanks! We've noted your request.");
+                e.target.reset();
+            })
+            .catch(console.error);
+    };
+
     return (
         <div className="App">
             <h1>Student Community Finder</h1>
@@ -76,7 +102,15 @@ function StudentHome() {
                 </p>
             )}
 
-            <footer style={{ marginTop: '2rem', textAlign: 'center', opacity: 0.5 }}>
+            <div style={{ marginTop: '4rem', maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
+                <h3>Can't find what you're looking for?</h3>
+                <form onSubmit={handleSuggestion} style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', marginTop: '1rem' }}>
+                    <input name="suggestion" placeholder="Tell us what community (University/Stage) you need..." style={{ padding: '0.8rem', width: '70%', borderRadius: '4px', border: 'none' }} required />
+                    <button type="submit" style={{ padding: '0.8rem 1.5rem' }}>Request</button>
+                </form>
+            </div>
+
+            <footer style={{ marginTop: '3rem', textAlign: 'center', opacity: 0.5, paddingBottom: '2rem' }}>
                 <a href="/admin" style={{ color: 'inherit', textDecoration: 'none', fontSize: '0.8rem' }}>Admin Access</a>
             </footer>
         </div>

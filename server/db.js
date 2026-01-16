@@ -86,7 +86,24 @@ const initDb = async () => {
             courseType TEXT,
             source_country TEXT,
             university TEXT,
-            intake TEXT
+            intake TEXT,
+            stage TEXT
+        )`);
+
+        // Migration: Add stage column if it doesn't exist
+        await client.query(`
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='communities' AND column_name='stage') THEN 
+                    ALTER TABLE communities ADD COLUMN stage TEXT; 
+                END IF; 
+            END $$;
+        `);
+
+        await client.query(`CREATE TABLE IF NOT EXISTS suggestions (
+            id SERIAL PRIMARY KEY,
+            user_input TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`);
 
         const res = await client.query("SELECT count(*) as count FROM communities");
@@ -94,10 +111,11 @@ const initDb = async () => {
 
         if (count === 0) {
             console.log("Seeding database...");
-            const insertText = 'INSERT INTO communities (name, platform, link, country, field, courseType) VALUES ($1, $2, $3, $4, $5, $6)';
+            const insertText = 'INSERT INTO communities (name, platform, link, country, field, courseType, stage) VALUES ($1, $2, $3, $4, $5, $6, $7)';
 
             for (const comm of initialData) {
-                await client.query(insertText, [comm.name, comm.platform, comm.link, comm.country, comm.field, comm.courseType]);
+                // Default stage to 'Applying' for seed data
+                await client.query(insertText, [comm.name, comm.platform, comm.link, comm.country, comm.field, comm.courseType, 'Applying']);
             }
             console.log("Database seeded!");
         } else {
